@@ -1,0 +1,146 @@
+-- Check for all rows with 'United States' as employee residency (332)
+
+SELECT *
+FROM `utility-binder-333917.Data_Science_Job_Salaries.salaries` 
+WHERE employee_country = 'United States'
+
+-- Update rows in column 'company_size' for easier reading - 'S' = 'Small', 'M' = 'Medium', 'L' = 'Large'
+
+UPDATE `utility-binder-333917.Data_Science_Job_Salaries.salaries` 
+SET company_size = CASE WHEN company_size = 'S' THEN 'Small'
+WHEN company_size = 'M' THEN 'Medium'
+WHEN company_size = 'L' THEN 'Large'
+END
+WHERE company_size is not null
+
+-- Same as above query, but with columns 'experience_level' and 'employment_type'
+
+UPDATE `utility-binder-333917.Data_Science_Job_Salaries.salaries` 
+SET experience_level = CASE WHEN experience_level = 'EN' THEN 'Junior'
+WHEN experience_level = 'MI' THEN 'Intermediate'
+WHEN experience_level = 'SE' THEN 'Senior'
+WHEN experience_level = 'EX' THEN 'Executive'
+END
+WHERE experience_level is not null
+
+UPDATE `utility-binder-333917.Data_Science_Job_Salaries.salaries` 
+SET employment_type = CASE WHEN employment_type = 'PT' THEN 'Part-Time'
+WHEN employment_type = 'FT' THEN 'Full-Time'
+WHEN employment_type = 'CT' THEN 'Contract'
+WHEN employment_type = 'FL' THEN 'Freelance'
+END
+WHERE employment_type is not null
+
+-- Remove unnecessary columns from your table
+
+ALTER TABLE `utility-binder-333917.Data_Science_Job_Salaries.salaries` 
+DROP column employee_residence
+
+-- What is the average annual salary (USD) of a Data Scientist working in and outside of the US? (In - $149194, Out - $67754)
+
+SELECT AVG(salary_in_usd)
+FROM `utility-binder-333917.Data_Science_Job_Salaries.salaries` 
+WHERE employee_country = 'United States'
+
+SELECT AVG(salary_in_usd)
+FROM `utility-binder-333917.Data_Science_Job_Salaries.salaries` 
+WHERE employee_country != 'United States'
+
+-- What is the average annual salary (USD) of a junior, intermediate, senior, and executive employee working in the US? ($98706, $135617, $153921, $249991)
+
+SELECT AVG(salary_in_usd)
+FROM `utility-binder-333917.Data_Science_Job_Salaries.salaries` 
+WHERE employee_country = 'United States' AND experience_level = 'Junior'
+
+SELECT AVG(salary_in_usd)
+FROM `utility-binder-333917.Data_Science_Job_Salaries.salaries` 
+WHERE employee_country = 'United States' AND experience_level = 'Intermediate'
+
+SELECT AVG(salary_in_usd)
+FROM `utility-binder-333917.Data_Science_Job_Salaries.salaries` 
+WHERE employee_country = 'United States' AND experience_level = 'Senior'
+
+SELECT AVG(salary_in_usd)
+FROM `utility-binder-333917.Data_Science_Job_Salaries.salaries` 
+WHERE employee_country = 'United States' AND experience_level = 'Executive'
+
+-- Those values in a table:
+
+SELECT DISTINCT(experience_level), AVG(salary_in_usd) as avg_salary
+FROM `utility-binder-333917.Data_Science_Job_Salaries.salaries`
+WHERE employee_country = 'United States' 
+GROUP BY experience_level
+ORDER BY avg_salary
+
+-- What is the average annual salary (USD) of a junior, intermediate, senior, and executive employee NOT working in the US? ($43425, $61033, $91816, $130392)
+
+SELECT AVG(salary_in_usd)
+FROM `utility-binder-333917.Data_Science_Job_Salaries.salaries` 
+WHERE employee_country != 'United States' AND experience_level = 'Junior'
+
+SELECT AVG(salary_in_usd)
+FROM `utility-binder-333917.Data_Science_Job_Salaries.salaries` 
+WHERE employee_country != 'United States' AND experience_level = 'Intermediate'
+
+SELECT AVG(salary_in_usd)
+FROM `utility-binder-333917.Data_Science_Job_Salaries.salaries` 
+WHERE employee_country != 'United States' AND experience_level = 'Senior'
+
+SELECT AVG(salary_in_usd)
+FROM `utility-binder-333917.Data_Science_Job_Salaries.salaries` 
+WHERE employee_country != 'United States' AND experience_level = 'Executive'
+
+-- Those values in a table:
+
+SELECT DISTINCT(experience_level), AVG(salary_in_usd) as avg_salary
+FROM `utility-binder-333917.Data_Science_Job_Salaries.salaries`
+WHERE employee_country != 'United States' 
+GROUP BY experience_level
+ORDER BY avg_salary
+
+-- What is the average annual salary (USD) of an employee by country?
+
+SELECT DISTINCT(employee_country), AVG(salary_in_usd) as avg_salary
+FROM `utility-binder-333917.Data_Science_Job_Salaries.salaries` 
+GROUP BY employee_country
+ORDER BY avg_salary desc
+
+-- What is the average annual salary (USD) of a US employee by job title?
+
+SELECT DISTINCT(job_title), AVG(salary_in_usd) as avg_salary
+FROM `utility-binder-333917.Data_Science_Job_Salaries.salaries`
+WHERE employee_country = 'United States' 
+GROUP BY job_title
+ORDER BY avg_salary desc
+
+-- What is the average annual salary (USD) of a US employee by work year?
+
+SELECT DISTINCT(work_year), AVG(salary_in_usd) as avg_salary
+FROM `utility-binder-333917.Data_Science_Job_Salaries.salaries`
+WHERE employee_country = 'United States' 
+GROUP BY work_year
+ORDER BY work_year
+
+-- Is there any significant difference in salary for remote workers versus non-remote workers in the US?
+
+SELECT DISTINCT(remote_ratio), AVG(salary_in_usd) as avg_salary
+FROM `utility-binder-333917.Data_Science_Job_Salaries.salaries`
+WHERE employee_country = 'United States' 
+GROUP BY remote_ratio
+ORDER BY remote_ratio
+
+-- Do large companies tend to pay their employees more money on average than smaller companies?
+
+SELECT DISTINCT(company_size), AVG(salary_in_usd) as avg_salary
+FROM `utility-binder-333917.Data_Science_Job_Salaries.salaries`
+WHERE employee_country = 'United States' 
+GROUP BY company_size
+ORDER BY company_size
+
+-- What is the annual salary (USD) for an employee of any residency working part-time, freelance, full-time, or contract?
+
+SELECT DISTINCT(employment_type), AVG(salary_in_usd) as avg_salary
+FROM `utility-binder-333917.Data_Science_Job_Salaries.salaries`
+GROUP BY employment_type
+ORDER BY avg_salary
+
